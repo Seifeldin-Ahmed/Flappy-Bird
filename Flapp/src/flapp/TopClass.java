@@ -24,7 +24,7 @@ public class TopClass implements ActionListener, KeyListener {
     private static final int PIPE_WIDTH = SCREEN_WIDTH / 8, PIPE_HEIGHT = 4 * PIPE_WIDTH;
     private static final int BIRD_WIDTH = 120, BIRD_HEIGHT = 75;
     private static int UPDATE_DIFFERENCE = 20; //time in ms between updates 
-    private static final int X_MOVEMENT_DIFFERENCE = 5; //distance the pipes move every update
+    private static int X_MOVEMENT_DIFFERENCE = 6; //distance the pipes move every update
     private static final int SCREEN_DELAY = 300; //after how many pixel the pipe will start to appear on the screen
     private static final int BIRD_X_LOCATION = SCREEN_WIDTH / 7;
     private static final int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF/2 , BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 13;
@@ -352,10 +352,12 @@ public class TopClass implements ActionListener, KeyListener {
     private void updateScore(BottomPipe bp1, BottomPipe bp2, Bird bird) {
         if (bp1.getX() + PIPE_WIDTH < bird.getX() && bp1.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
+            if(UPDATE_DIFFERENCE>=8)
             UPDATE_DIFFERENCE--;
         } else if (bp2.getX() + PIPE_WIDTH < bird.getX() && bp2.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            UPDATE_DIFFERENCE--;
+           if(UPDATE_DIFFERENCE>=8) 
+               UPDATE_DIFFERENCE--;
         }
     }
 
