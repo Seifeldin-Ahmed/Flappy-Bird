@@ -20,14 +20,14 @@ public class TopClass implements ActionListener, KeyListener {
 
     private static final int SCREEN_WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     private static final int SCREEN_HEIGHT = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-    private static final int PIPE_GAP = SCREEN_HEIGHT / 5; //distance in pixels between pipes
+    private static final int PIPE_GAP = SCREEN_HEIGHT / 4; //distance in pixels between pipes
     private static final int PIPE_WIDTH = SCREEN_WIDTH / 8, PIPE_HEIGHT = 4 * PIPE_WIDTH;
     private static final int BIRD_WIDTH = 120, BIRD_HEIGHT = 75;
     private static int UPDATE_DIFFERENCE = 20; //time in ms between updates 
     private static final int X_MOVEMENT_DIFFERENCE = 5; //distance the pipes move every update
-    private static final int SCREEN_DELAY = 300; //needed because of long load times forcing pipes to pop up mid-screen
+    private static final int SCREEN_DELAY = 300; //after how many pixel the pipe will start to appear on the screen
     private static final int BIRD_X_LOCATION = SCREEN_WIDTH / 7;
-    private static final int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF / 2, BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 10;
+    private static final int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF/2 , BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 13;
 
     //global variables
     private boolean loopVar = true; //false -> don't run loop; true -> run loop for pipes
@@ -36,7 +36,8 @@ public class TopClass implements ActionListener, KeyListener {
     private boolean birdFired = false; //true -> button pressed before jump completes
     private boolean released = true; //space bar released; starts as true so first press registers
     private int birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT;
-
+    private int birdX = BIRD_X_LOCATION;
+    private int birdY = birdYTracker;
     //global swing objects
     private final JFrame f = new JFrame("Flappy Bird Redux");
     private JButton startGame;
@@ -112,6 +113,8 @@ public class TopClass implements ActionListener, KeyListener {
             birdThrust = true;
             released = false;
         } else if (e.getKeyCode() == KeyEvent.VK_B && gamePlay == false) {
+            birdY = birdYTracker;
+            UPDATE_DIFFERENCE=20;
             birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT; //need to reset the bird's starting height
             birdThrust = false; //if user presses SPACE before collision and a collision occurs before reaching max height, you get residual jump, so this is preventative
             actionPerformed(new ActionEvent(startGame, -1, ""));
@@ -209,20 +212,24 @@ public class TopClass implements ActionListener, KeyListener {
      * Method that performs the splash screen graphics movements
      */
     private void gameScreen(boolean isStarted) {
+        
         BottomPipe bp1 = new BottomPipe(PIPE_WIDTH, PIPE_HEIGHT);
         BottomPipe bp2 = new BottomPipe(PIPE_WIDTH, PIPE_HEIGHT);
         TopPipe tp1 = new TopPipe(PIPE_WIDTH, PIPE_HEIGHT);
         TopPipe tp2 = new TopPipe(PIPE_WIDTH, PIPE_HEIGHT);
         Bird bird = new Bird(BIRD_WIDTH, BIRD_HEIGHT);
+        
+        
         //variables to track x and y image locations for the bottom pipe
         int xLoc1 = SCREEN_WIDTH + SCREEN_DELAY;
-        int xLoc2 = (int) ((double) 3.0 / 2.0 * SCREEN_WIDTH + PIPE_WIDTH / 2.0) + SCREEN_DELAY;
-        int yLoc1 = bottomPipeLoc(), yLoc2 = bottomPipeLoc();
-        int birdX = BIRD_X_LOCATION, birdY = birdYTracker;
+        int xLoc2 =  SCREEN_WIDTH  + (int)(SCREEN_DELAY*4.5);
+        int yLoc1 = bottomPipeLoc();
+        int yLoc2 = bottomPipeLoc();
 
         pgs.setBottomPipe(bp1, bp2);
         pgs.setTopPipe(tp1, tp2);
         pgs.setBird(bird);
+        
         bird.setX(birdX);
 
         //variable to hold the loop start time
@@ -243,34 +250,7 @@ public class TopClass implements ActionListener, KeyListener {
                 //decrement the pipe locations by the predetermined amount
                 xLoc1 -= X_MOVEMENT_DIFFERENCE;
                 xLoc2 -= X_MOVEMENT_DIFFERENCE;
-
-                if (birdFired && isStarted) {
-                    // System.out.println("process bird:" +birdY);
-                    birdYTracker = birdY;
-                    birdFired = false;
-                }
-
-                if (birdThrust && isStarted) { //bird is rising 
-                    //move bird vertically
-                    if (birdYTracker - birdY < BIRD_JUMP_HEIGHT) {
-                        if (birdY - BIRD_JUMP_DIFF > 0) {
-                            // System.out.println("start bird:" +birdY);
-                            birdY -= BIRD_JUMP_DIFF; //coordinates different
-                        } else {
-                            birdY = 0;
-                            birdYTracker = birdY;
-                            birdThrust = false;
-                        }
-                    } else {
-                        //                 System.out.println("end bird:" +birdY);
-                        birdYTracker = birdY;
-                        birdThrust = false;
-                    }
-                } else if (isStarted) { // bird is falling
-                    birdY += BIRD_FALL_DIFF;
-                    birdYTracker = birdY;
-                }
-
+                             
                 //update the BottomPipe and TopPipe locations
                 bp1.setX(xLoc1);
                 bp1.setY(yLoc1);
@@ -282,6 +262,7 @@ public class TopClass implements ActionListener, KeyListener {
                 tp2.setY(yLoc2 - PIPE_GAP - PIPE_HEIGHT); //ensure tp2 placed in proper location
 
                 if (isStarted) {
+                    handle_jump();
                     bird.setY(birdY);
                 }
 
@@ -300,10 +281,39 @@ public class TopClass implements ActionListener, KeyListener {
             }
         }
     }
+    
+  private void handle_jump()
+  {   
+       if (birdFired) { // if user press space to jump and before it complete, he pressed space again 
+                       // it means if the user press 2 spaces after each other
+                    birdYTracker = birdY;
+                    birdFired = false;
+                }
 
+                if (birdThrust ) { //bird is rising 
+                    //move bird vertically
+                    if (birdYTracker - birdY < BIRD_JUMP_HEIGHT) {
+                        if (birdY - BIRD_JUMP_DIFF > 0) {
+                              birdY -= BIRD_JUMP_DIFF; //coordinates different
+                        } else {
+                            birdY = 0;
+                            birdYTracker = birdY;
+                            birdThrust = false;
+                        }
+                    } else {
+                        birdYTracker = birdY;
+                        birdThrust = false;
+                    }
+                } else { // bird is falling
+                    birdY += BIRD_FALL_DIFF;
+                    birdYTracker = birdY;
+                }
+
+  }
+  
+  
     /**
      * Calculates a random int for the bottom pipe's placement
-     *
      * @return int
      */
     private int bottomPipeLoc() {
@@ -315,20 +325,36 @@ public class TopClass implements ActionListener, KeyListener {
         return temp;
     }
 
-    /**
+    
+    /*  
      * Method that checks whether the score needs to be updated
      *
      *  bp1 First BottomPipe object
      *  bp2 Second BottomPipe object
      *  bird Bird object
-     */
+     *    
+         ********************                                            ********************
+         *    117px         *                                            *    117px         * 
+         *<..........>      *                                            *<..........>      *
+         *       ____       *                                            *       ____       *
+         *      |Bird|      *                                            *      |Bird|      *
+         *       ----       *                                            *       ----       *
+         *    120px         *    after 1 step(X_MOVEMENT_DIFFERENCE)     *    110px         *
+         *<...........>     *   .....................................>   *<.........>       *
+         *      ------      *                                            *    ------        *
+         *     |      |     *                                            *   |      |       *
+         *     | bp1  |     *                                            *   | bp1  |       * 
+         *     |      |     *                                            *   |      |       *
+         ********************                                            ********************
+        
+    */
     private void updateScore(BottomPipe bp1, BottomPipe bp2, Bird bird) {
         if (bp1.getX() + PIPE_WIDTH < bird.getX() && bp1.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            UPDATE_DIFFERENCE-=2;
+            UPDATE_DIFFERENCE--;
         } else if (bp2.getX() + PIPE_WIDTH < bird.getX() && bp2.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            UPDATE_DIFFERENCE-=2;
+            UPDATE_DIFFERENCE--;
         }
     }
 
