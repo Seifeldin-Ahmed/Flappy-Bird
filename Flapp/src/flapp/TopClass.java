@@ -113,6 +113,7 @@ public class TopClass implements ActionListener, KeyListener {
             birdThrust = true;
             released = false;
         } else if (e.getKeyCode() == KeyEvent.VK_B && gamePlay == false) {
+            birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT;
             birdY = birdYTracker;
             UPDATE_DIFFERENCE=20;
             birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT; //need to reset the bird's starting height

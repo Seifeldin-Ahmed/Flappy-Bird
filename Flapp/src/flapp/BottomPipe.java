@@ -93,7 +93,7 @@ public class BottomPipe {
 	 * @return Rectangle outlining the BottomPipe's position on screen
 	 */
 	public Rectangle getRectangle() {
-		return (new Rectangle(xLoc, yLoc, bottomPipe.getWidth(null), bottomPipe.getHeight(null)));
+		return (new Rectangle(xLoc, yLoc, getWidth(), getHeight()));
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class BottomPipe {
 	 * @return TopPipe's BufferedImage object
 	 */
 	public BufferedImage getBI() {
-		BufferedImage bi = new BufferedImage(bottomPipe.getWidth(null), bottomPipe.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = bi.getGraphics();
 		g.drawImage(bottomPipe, 0, 0, null);
 		g.dispose();

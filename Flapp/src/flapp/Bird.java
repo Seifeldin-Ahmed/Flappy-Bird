@@ -45,12 +45,7 @@ public class Bird {
 	 * @return int
 	 */
 	public int getWidth() {
-		try {
-			return flappyBird.getWidth(null); 
-		}
-		catch(Exception e) {
-			return -1;
-		}
+	      return flappyBird.getWidth(null); //return -1 if the width not yet known
 	}
 	
 	/**
@@ -58,12 +53,7 @@ public class Bird {
 	 * @return int
 	 */
 	public int getHeight() {
-		try {
-			return flappyBird.getHeight(null);
-		}
-		catch(Exception e) {
-			return -1;
-		}
+              return flappyBird.getHeight(null);
 	}
 	
 	/**
@@ -103,7 +93,7 @@ public class Bird {
 	 * @return Rectangle outlining the bird's position on screen
 	 */
 	public Rectangle getRectangle() {
-		return (new Rectangle(xLoc, yLoc, flappyBird.getWidth(null), flappyBird.getHeight(null)));
+		return (new Rectangle(xLoc, yLoc, getWidth(), getHeight()));
 	}
 	
 	/**
@@ -111,7 +101,7 @@ public class Bird {
 	 * @return Bird's BufferedImage object
 	 */
 	public BufferedImage getBI() {
-		BufferedImage bi = new BufferedImage(flappyBird.getWidth(null), flappyBird.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = bi.getGraphics();
 		g.drawImage(flappyBird, 0, 0, null);
 		g.dispose();
