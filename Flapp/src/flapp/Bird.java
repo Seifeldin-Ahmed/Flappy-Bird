@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 
 public class Bird {
 	//global variables
@@ -90,7 +89,7 @@ public class Bird {
 	 * @return Rectangle outlining the bird's position on screen
 	 */
 	public Rectangle getRectangle() {
-		return (new Rectangle(xLoc, yLoc, getWidth()-19, getHeight()-22));
+		return (new Rectangle(xLoc, yLoc, getWidth()-20, getHeight()-22));
 	}
 
 

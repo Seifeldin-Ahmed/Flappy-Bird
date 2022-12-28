@@ -24,10 +24,11 @@ public class TopClass implements ActionListener, KeyListener {
     private static final int PIPE_WIDTH = SCREEN_WIDTH / 8, PIPE_HEIGHT = 4 * PIPE_WIDTH;
     private static final int BIRD_WIDTH = 120, BIRD_HEIGHT = 75;
     private static int UPDATE_DIFFERENCE = 20; //time in ms between updates 
-    private static final int X_MOVEMENT_DIFFERENCE = 5; //distance the pipes move every update
+    private static int X_MOVEMENT_DIFFERENCE = 5; //distance the pipes move every update
     private static final int SCREEN_DELAY = 300; //after how many pixel the pipe will start to appear on the screen
     private static final int BIRD_X_LOCATION = SCREEN_WIDTH / 7;
-    private static final int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF/2 , BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 13;
+    private static int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF/2;
+    private static final int BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 13;
 
     //global variables
     private boolean loopVar = true; //false -> don't run loop; true -> run loop for pipes
@@ -115,7 +116,8 @@ public class TopClass implements ActionListener, KeyListener {
         } else if (e.getKeyCode() == KeyEvent.VK_B && gamePlay == false) {
             birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT;
             birdY = birdYTracker;
-            UPDATE_DIFFERENCE=20;
+            X_MOVEMENT_DIFFERENCE=5;
+            BIRD_JUMP_DIFF=8;
             birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT; //need to reset the bird's starting height
             birdThrust = false; //if user presses SPACE before collision and a collision occurs before reaching max height, you get residual jump, so this is preventative
             actionPerformed(new ActionEvent(startGame, -1, ""));
@@ -367,10 +369,16 @@ public class TopClass implements ActionListener, KeyListener {
     private void updateScore(BottomPipe bp1, BottomPipe bp2, Bird bird) {
         if (bp1.getX() + PIPE_WIDTH < bird.getX() && bp1.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            UPDATE_DIFFERENCE--;
+            if(X_MOVEMENT_DIFFERENCE<18)
+            { X_MOVEMENT_DIFFERENCE++;
+             BIRD_JUMP_DIFF++;
+            }
         } else if (bp2.getX() + PIPE_WIDTH < bird.getX() && bp2.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            UPDATE_DIFFERENCE--;
+           if(X_MOVEMENT_DIFFERENCE<18)
+           {   X_MOVEMENT_DIFFERENCE++;
+              BIRD_JUMP_DIFF++;
+           }
         }
     }
 
