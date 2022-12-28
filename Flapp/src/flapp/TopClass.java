@@ -11,8 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-
 import javax.swing.*;
 
 public class TopClass implements ActionListener, KeyListener {
@@ -118,7 +116,6 @@ public class TopClass implements ActionListener, KeyListener {
             birdY = birdYTracker;
             X_MOVEMENT_DIFFERENCE=5;
             BIRD_JUMP_DIFF=8;
-            birdYTracker = SCREEN_HEIGHT / 2 - BIRD_HEIGHT; //need to reset the bird's starting height
             birdThrust = false; //if user presses SPACE before collision and a collision occurs before reaching max height, you get residual jump, so this is preventative
             actionPerformed(new ActionEvent(startGame, -1, ""));
         }
