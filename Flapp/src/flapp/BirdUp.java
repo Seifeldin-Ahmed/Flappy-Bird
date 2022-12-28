@@ -1,22 +1,29 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package flapp;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-public class Bird {
+/**
+ *
+ * @author Dell
+ */
+public class BirdUp {
 	//global variables
-	private Image flappyBird;
+	private Image flappyBirdUp;
 	private int xLoc = 0, yLoc = 0;
 	
 	/**
 	 * Default constructor
 	 */
-	public Bird(int initialWidth, int initialHeight) {
-		flappyBird = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("blue_bird.png"));
+	public BirdUp(int initialWidth, int initialHeight) {
+		flappyBirdUp = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("blue_bird_up.png"));
 		scaleBird(initialWidth, initialHeight);
 	}
 	
@@ -26,7 +33,7 @@ public class Bird {
 	 * @param height The desired height of the flappy bird
 	 */
 	public void scaleBird(int width, int height) {
-		flappyBird = flappyBird.getScaledInstance(width, height, Image.SCALE_SMOOTH);		
+		flappyBirdUp = flappyBirdUp.getScaledInstance(width, height, Image.SCALE_SMOOTH);		
 	}
 	
 	/**
@@ -34,7 +41,7 @@ public class Bird {
 	 * @return Image
 	 */
 	public Image getBird() {
-		return flappyBird;
+		return flappyBirdUp;
 	}
 	
 	/**
@@ -42,7 +49,7 @@ public class Bird {
 	 * @return int
 	 */
 	public int getWidth() {
-	      return flappyBird.getWidth(null); //return -1 if the width not yet known
+	      return flappyBirdUp.getWidth(null); //return -1 if the width not yet known
 	}
 	
 	/**
@@ -50,7 +57,7 @@ public class Bird {
 	 * @return int
 	 */
 	public int getHeight() {
-              return flappyBird.getHeight(null);
+              return flappyBirdUp.getHeight(null);
 	}
 	
 	/**
@@ -90,8 +97,12 @@ public class Bird {
 	 * @return Rectangle outlining the bird's position on screen
 	 */
 	public Rectangle getRectangle() {
-		return (new Rectangle(xLoc, yLoc, getWidth()-19, getHeight()-22));
+		return (new Rectangle(xLoc, yLoc, getWidth(), getHeight()));
 	}
-
+	
+	/**
+	 * Method to acquire a BufferedImage that represents the Bird's image object
+	 * @return Bird's BufferedImage object
+	 */
 
 }

@@ -95,15 +95,4 @@ public class TopPipe {
 		return (new Rectangle(xLoc, yLoc, getWidth(), getHeight()));
 	}
 	
-	/**
-	 * Method to acquire a BufferedImage that represents the TopPipe's image object
-	 * @return TopPipe's BufferedImage object
-	 */
-	public BufferedImage getBI() {
-		BufferedImage bi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.getGraphics();
-		g.drawImage(topPipe, 0, 0, null);
-		g.dispose();
-		return bi;
-	}
 }

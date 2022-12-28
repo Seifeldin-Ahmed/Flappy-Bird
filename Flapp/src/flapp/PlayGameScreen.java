@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package flapp;
 
 import javax.swing.*;
@@ -17,6 +13,7 @@ public class PlayGameScreen extends JPanel {
         private final int screenWidth;
 	private final int screenHeight;
 	private boolean isStarted = false;
+        private static boolean fly = false;
 	private int successfulJumps = 0;
 	private String message = "Flappy Bird";
 	private final Font primaryFont = new Font("Goudy Stout", Font.BOLD, 56);
@@ -24,6 +21,7 @@ public class PlayGameScreen extends JPanel {
 	private BottomPipe bp1, bp2;
 	private TopPipe tp1, tp2;
 	private Bird bird;
+        private BirdUp birdup;
 
 	/**
 	 * Default constructor for the PlayGameScreen class
@@ -64,9 +62,13 @@ public class PlayGameScreen extends JPanel {
 			g.drawImage(tp1.getPipe(), tp1.getX(), tp1.getY(), null);
 			g.drawImage(tp2.getPipe(), tp2.getX(), tp2.getY(), null);
 		}
-		if(isStarted && bird != null) {
+		if(isStarted && bird != null && !fly) {
 			g.drawImage(bird.getBird(), bird.getX(), bird.getY(), null);
 		}
+                if(fly && birdup!=null)
+                {
+                 g.drawImage(birdup.getBird(), birdup.getX(), birdup.getY(), null);
+                }
 		if(isStarted) {
 			g.drawString(successfulJumps+" ", screenWidth/2-scoreWidth/2, 50);
 		}	
@@ -102,7 +104,10 @@ public class PlayGameScreen extends JPanel {
 	public void setBird(Bird bird) {
 		this.bird = bird;
 	}
-	
+	public void setBirdUp(BirdUp birdup) {
+		this.birdup = birdup;
+	}
+		
 	/**
 	 * Method called to invoke an increase in the variable tracking the current
 	 * jump score
@@ -126,4 +131,8 @@ public class PlayGameScreen extends JPanel {
 	public void sendText(String message) {
 		this.message = message;
 	}
+        public static void set_fly(boolean f)
+        {
+            fly=f;
+        }
 }

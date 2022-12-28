@@ -24,7 +24,7 @@ public class TopClass implements ActionListener, KeyListener {
     private static final int PIPE_WIDTH = SCREEN_WIDTH / 8, PIPE_HEIGHT = 4 * PIPE_WIDTH;
     private static final int BIRD_WIDTH = 120, BIRD_HEIGHT = 75;
     private static int UPDATE_DIFFERENCE = 20; //time in ms between updates 
-    private static int X_MOVEMENT_DIFFERENCE = 6; //distance the pipes move every update
+    private static final int X_MOVEMENT_DIFFERENCE = 5; //distance the pipes move every update
     private static final int SCREEN_DELAY = 300; //after how many pixel the pipe will start to appear on the screen
     private static final int BIRD_X_LOCATION = SCREEN_WIDTH / 7;
     private static final int BIRD_JUMP_DIFF = 8, BIRD_FALL_DIFF = BIRD_JUMP_DIFF/2 , BIRD_JUMP_HEIGHT = PIPE_GAP - BIRD_HEIGHT - BIRD_JUMP_DIFF * 13;
@@ -212,6 +212,8 @@ public class TopClass implements ActionListener, KeyListener {
     /**
      * Method that performs the splash screen graphics movements
      */
+        boolean up=true;
+
     private void gameScreen(boolean isStarted) {
         
         BottomPipe bp1 = new BottomPipe(PIPE_WIDTH, PIPE_HEIGHT);
@@ -219,8 +221,8 @@ public class TopClass implements ActionListener, KeyListener {
         TopPipe tp1 = new TopPipe(PIPE_WIDTH, PIPE_HEIGHT);
         TopPipe tp2 = new TopPipe(PIPE_WIDTH, PIPE_HEIGHT);
         Bird bird = new Bird(BIRD_WIDTH, BIRD_HEIGHT);
-        
-        
+        BirdUp birdup = new BirdUp(BIRD_WIDTH, BIRD_HEIGHT);
+        int delay=10;
         //variables to track x and y image locations for the bottom pipe
         int xLoc1 = SCREEN_WIDTH + SCREEN_DELAY;
         int xLoc2 =  SCREEN_WIDTH  + (int)(SCREEN_DELAY*4.5);
@@ -230,9 +232,9 @@ public class TopClass implements ActionListener, KeyListener {
         pgs.setBottomPipe(bp1, bp2);
         pgs.setTopPipe(tp1, tp2);
         pgs.setBird(bird);
-        
+        pgs.setBirdUp(birdup);
         bird.setX(birdX);
-
+        birdup.setX(birdX);
         //variable to hold the loop start time
         long startTime = System.currentTimeMillis();
 
@@ -265,10 +267,22 @@ public class TopClass implements ActionListener, KeyListener {
                 if (isStarted) {
                     handle_jump();
                     bird.setY(birdY);
+                    birdup.setY(birdY-13);
+                    delay--;
+                   if(up && delay==0)
+                    { PlayGameScreen.set_fly(true);
+                        up=false;
+                        delay=5;
+                    }
+                   else if(delay==0)
+                    {
+                        PlayGameScreen.set_fly(false);
+                        up=true;
+                        delay=5;
+                    }
                 }
 
-                //set the BottomPipe and TopPipe local variables in PlayGameScreen by parsing the local variables
-                if (isStarted && bird.getWidth() != -1) { //need the second part because if bird not on-screen, cannot get image width and have cascading error in collision
+                if ((isStarted && bird.getWidth() != -1) || (isStarted &&birdup.getWidth()!=-1)) { //need the second part because if bird not on-screen, cannot get image width and have cascading error in collision
                     collisionDetection(bp1, bp2, tp1, tp2, bird);
                     updateScore(bp1, bp2, bird);
                 }
@@ -282,7 +296,8 @@ public class TopClass implements ActionListener, KeyListener {
             }
         }
     }
-    
+
+                    
   private void handle_jump()
   {   
        if (birdFired) { // if user press space to jump and before it complete, he pressed space again 
@@ -290,9 +305,9 @@ public class TopClass implements ActionListener, KeyListener {
                     birdYTracker = birdY;
                     birdFired = false;
                 }
-
                 if (birdThrust ) { //bird is rising 
                     //move bird vertically
+
                     if (birdYTracker - birdY < BIRD_JUMP_HEIGHT) {
                         if (birdY - BIRD_JUMP_DIFF > 0) {
                               birdY -= BIRD_JUMP_DIFF; //coordinates different
@@ -352,12 +367,10 @@ public class TopClass implements ActionListener, KeyListener {
     private void updateScore(BottomPipe bp1, BottomPipe bp2, Bird bird) {
         if (bp1.getX() + PIPE_WIDTH < bird.getX() && bp1.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-            if(UPDATE_DIFFERENCE>=8)
             UPDATE_DIFFERENCE--;
         } else if (bp2.getX() + PIPE_WIDTH < bird.getX() && bp2.getX() + PIPE_WIDTH > bird.getX() - X_MOVEMENT_DIFFERENCE) {
             pgs.incrementJump();
-           if(UPDATE_DIFFERENCE>=8) 
-               UPDATE_DIFFERENCE--;
+            UPDATE_DIFFERENCE--;
         }
     }
 
@@ -371,10 +384,11 @@ public class TopClass implements ActionListener, KeyListener {
      * @param bird Bird object
      */
     private void collisionDetection(BottomPipe bp1, BottomPipe bp2, TopPipe tp1, TopPipe tp2, Bird bird) {
-        collisionHelper(bird.getRectangle(), bp1.getRectangle(), bird.getBI(), bp1.getBI());
-        collisionHelper(bird.getRectangle(), bp2.getRectangle(), bird.getBI(), bp2.getBI());
-        collisionHelper(bird.getRectangle(), tp1.getRectangle(), bird.getBI(), tp1.getBI());
-        collisionHelper(bird.getRectangle(), tp2.getRectangle(), bird.getBI(), tp2.getBI());
+
+          collisionHelper(bird.getRectangle(), bp1.getRectangle());
+          collisionHelper(bird.getRectangle(), bp2.getRectangle());
+          collisionHelper(bird.getRectangle(), tp1.getRectangle());
+          collisionHelper(bird.getRectangle(), tp2.getRectangle());
 
         if (bird.getY() + BIRD_HEIGHT > SCREEN_HEIGHT * 7 / 8) { //ground detection
             pgs.sendText("Game Over");
@@ -389,28 +403,13 @@ public class TopClass implements ActionListener, KeyListener {
      *
      * @param r1 The Bird's rectangle component
      * @param r2 Collision component rectangle
-     * @param b1 The Bird's BufferedImage component
-     * @param b2 Collision component BufferedImage
      */
-    private void collisionHelper(Rectangle r1, Rectangle r2, BufferedImage b1, BufferedImage b2) {
+    private void collisionHelper(Rectangle r1, Rectangle r2) {
         if (r1.intersects(r2)) {
-            Rectangle r = r1.intersection(r2);
-
-            int firstI = (int) (r.getMinX() - r1.getMinX()); //firstI is the first x-pixel to iterate from
-            int firstJ = (int) (r.getMinY() - r1.getMinY()); //firstJ is the first y-pixel to iterate from
-            int bp1XHelper = (int) (r1.getMinX() - r2.getMinX()); //helper variables to use when referring to collision object
-            int bp1YHelper = (int) (r1.getMinY() - r2.getMinY());
-
-            for (int i = firstI; i < r.getWidth() + firstI; i++) { //
-                for (int j = firstJ; j < r.getHeight() + firstJ; j++) {
-                    if ((b1.getRGB(i, j) & 0xFF000000) != 0x00 && (b2.getRGB(i + bp1XHelper, j + bp1YHelper) & 0xFF000000) != 0x00) {
                         pgs.sendText("Game Over");
                         loopVar = false; //stop the game loop
                         gamePlay = false; //game has ended
-                        break;
-                    }
-                }
-            }
         }
     }
 }
+
